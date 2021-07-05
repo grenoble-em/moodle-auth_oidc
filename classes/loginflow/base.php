@@ -24,6 +24,7 @@
 namespace auth_oidc\loginflow;
 
 class base {
+
     /** @var object Plugin config. */
     public $config;
 
@@ -36,7 +37,7 @@ class base {
         $default = [
             'opname' => get_string('pluginname', 'auth_oidc')
         ];
-        $storedconfig = (array)get_config('auth_oidc');
+        $storedconfig = (array) get_config('auth_oidc');
         $forcedconfig = [
             'field_updatelocal_idnumber' => 'onlogin',
             'field_lock_idnumber' => 'locked',
@@ -75,7 +76,7 @@ class base {
             }
         }
 
-        $this->config = (object)array_merge($default, $storedconfig, $forcedconfig);
+        $this->config = (object) array_merge($default, $storedconfig, $forcedconfig);
     }
 
     /**
@@ -177,7 +178,7 @@ class base {
 
             // Call function in local_o365 to map fields.
             $updateduser = \local_o365\feature\usersync\main::apply_configured_fieldmap($userdata, new \stdClass(), 'login');
-            $userinfo = (array)$updateduser;
+            $userinfo = (array) $updateduser;
         } else {
             // If local_o365 is not installed, use default mapping.
             $userinfo = [];
@@ -207,6 +208,7 @@ class base {
                 }
             }
         }
+        $userinfo['idnumber'] = $idtoken->claim('oid');
 
         return $userinfo;
     }
@@ -230,7 +232,7 @@ class base {
      * @param \moodle_url $selfurl The page this is accessed from. Used for some redirects.
      */
     public function disconnect($justremovetokens = false, $donotremovetokens = false, \moodle_url $redirect = null,
-                               \moodle_url $selfurl = null, $userid = null) {
+        \moodle_url $selfurl = null, $userid = null) {
         global $USER, $DB, $CFG;
         if ($redirect === null) {
             $redirect = new \moodle_url('/auth/oidc/ucp.php');
@@ -258,7 +260,7 @@ class base {
             redirect($redirect);
         } else {
             global $OUTPUT, $PAGE;
-            require_once($CFG->dirroot.'/user/lib.php');
+            require_once($CFG->dirroot . '/user/lib.php');
             $PAGE->set_url($selfurl->out());
             $PAGE->set_context(\context_system::instance());
             $PAGE->set_pagelayout('standard');
@@ -470,7 +472,7 @@ class base {
                     $hasrestrictions = true;
                     ob_start();
                     try {
-                        $pattern = '/'.$restriction.'/';
+                        $pattern = '/' . $restriction . '/';
                         if (isset($this->config->userrestrictionscasesensitive) && !$this->config->userrestrictionscasesensitive) {
                             $pattern .= 'i';
                         }
@@ -502,7 +504,6 @@ class base {
         }
         return ($hasrestrictions === true && $userpassed !== true) ? false : true;
     }
-
 
     /**
      * Create a token for a user, thus linking a Moodle user to an OpenID Connect user.
@@ -583,4 +584,5 @@ class base {
         $tokenrec->idtoken = $tokenparams['id_token'];
         $DB->update_record('auth_oidc_token', $tokenrec);
     }
+
 }
