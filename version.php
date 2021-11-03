@@ -20,11 +20,10 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2021051705;
-$plugin->requires = 2021051700;
+$plugin->requires = 2016120500;
 $plugin->release = '3.11.1';
 $plugin->component = 'auth_oidc';
 $plugin->maturity = MATURITY_STABLE;
