@@ -179,6 +179,11 @@ class base {
                     }
                 }
             }
+
+            $oid = $idtoken->claim('oid');
+            if (!empty($oid)) {
+                $userinfo['idnumber'] = $oid;
+            }
         }
 
         return $userinfo;
