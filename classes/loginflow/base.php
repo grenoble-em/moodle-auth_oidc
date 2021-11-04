@@ -47,6 +47,17 @@ class base {
             }
         }
 
+        $storedconfig = array_merge($storedconfig, [
+            'field_updatelocal_idnumber' => 'onlogin',
+            'field_lock_idnumber' => 'locked',
+            'field_updatelocal_firstname' => 'onlogin',
+            'field_lock_firstname' => 'locked',
+            'field_updatelocal_lastname' => 'onlogin',
+            'field_lock_lastname' => 'locked',
+            'field_updatelocal_email' => 'onlogin',
+            'field_lock_email' => 'locked',
+        ]);
+
         $this->config = (object)array_merge($default, $storedconfig);
     }
 
