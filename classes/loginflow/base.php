@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/auth/oidc/lib.php');
 
 class base {
+
     /** @var object Plugin config. */
     public $config;
 
@@ -39,7 +40,7 @@ class base {
         $default = [
             'opname' => get_string('pluginname', 'auth_oidc')
         ];
-        $storedconfig = (array)get_config('auth_oidc');
+        $storedconfig = (array) get_config('auth_oidc');
 
         foreach ($storedconfig as $configname => $configvalue) {
             if (strpos($configname, 'field_updatelocal_') === 0 && $configvalue == 'always') {
@@ -58,7 +59,7 @@ class base {
             'field_lock_email' => 'locked',
         ]);
 
-        $this->config = (object)array_merge($default, $storedconfig);
+        $this->config = (object) array_merge($default, $storedconfig);
     }
 
     /**
@@ -161,7 +162,7 @@ class base {
 
             // Call function in local_o365 to map fields.
             $updateduser = \local_o365\feature\usersync\main::apply_configured_fieldmap($userdata, new \stdClass(), 'login');
-            $userinfo = (array)$updateduser;
+            $userinfo = (array) $updateduser;
         } else {
             // If local_o365 is not installed, use default mapping.
             $userinfo = [];
@@ -170,17 +171,17 @@ class base {
 
             $firstname = $idtoken->claim('given_name');
             if (!empty($firstname)) {
-                $userinfo['firstname'] = $firstname;
+                $userinfo['firstname'] = ucfirst(\core_text::strtolower($firstname));
             }
 
             $lastname = $idtoken->claim('family_name');
             if (!empty($lastname)) {
-                $userinfo['lastname'] = $lastname;
+                $userinfo['lastname'] = \core_text::strtoupper($lastname);
             }
 
             $email = $idtoken->claim('email');
             if (!empty($email)) {
-                $userinfo['email'] = $email;
+                $userinfo['email'] = \core_text::strtolower($email);
             } else {
                 $upn = $idtoken->claim('upn');
                 if (!empty($upn)) {
@@ -220,7 +221,7 @@ class base {
      * @param  $userid
      */
     public function disconnect($justremovetokens = false, $donotremovetokens = false, \moodle_url $redirect = null,
-                               \moodle_url $selfurl = null, $userid = null) {
+        \moodle_url $selfurl = null, $userid = null) {
         global $USER, $DB, $CFG;
         if ($redirect === null) {
             $redirect = new \moodle_url('/auth/oidc/ucp.php');
@@ -248,7 +249,7 @@ class base {
             redirect($redirect);
         } else {
             global $OUTPUT, $PAGE;
-            require_once($CFG->dirroot.'/user/lib.php');
+            require_once($CFG->dirroot . '/user/lib.php');
             $PAGE->set_url($selfurl->out());
             $PAGE->set_context(\context_system::instance());
             $PAGE->set_pagelayout('standard');
@@ -291,7 +292,7 @@ class base {
                 redirect($redirect);
             } else if ($fromform = $mform->get_data()) {
                 if (empty($fromform->newmethod) || ($fromform->newmethod !== $prevauthmethod &&
-                        $fromform->newmethod !== 'manual')) {
+                    $fromform->newmethod !== 'manual')) {
                     throw new \moodle_exception('errorauthdisconnectinvalidmethod', 'auth_oidc');
                 }
 
@@ -472,7 +473,7 @@ class base {
                     $hasrestrictions = true;
                     ob_start();
                     try {
-                        $pattern = '/'.$restriction.'/';
+                        $pattern = '/' . $restriction . '/';
                         if (isset($this->config->userrestrictionscasesensitive) && !$this->config->userrestrictionscasesensitive) {
                             $pattern .= 'i';
                         }
@@ -594,4 +595,5 @@ class base {
         $tokenrec->idtoken = $tokenparams['id_token'];
         $DB->update_record('auth_oidc_token', $tokenrec);
     }
+
 }
